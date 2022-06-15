@@ -4,29 +4,48 @@ const { Lead, Project } = require("../models");
 /**
  * @route		POST /lead
  * @desc		Insert lead
- * @body	{clientId,projectId,unitId}
-
+ * @body	{client,intrested,unitId}
  */
 
 router.post("/", async (req, res, next) => {
-  if (req.body.projectId && req.body.unitId) {
-    const project = await Project.findById(req.body.projectId);
-    const alreadyAddedLead = project.leads.includes(req.body.clientId);
+  if (req.body.intrested) {
+    const project = await Project.findById(req.body.intrested).populate(
+      "leads"
+    );
+
+    const alreadyAddedLead = project.leads
+      ? project.leads.map((i) => {
+          if (i.client === req.body.client) {
+            return true;
+          } else {
+            return false;
+          }
+        })
+      : false;
     if (alreadyAddedLead) {
       return res
         .status(200)
         .json({ message: "Lead is already added in this project" });
     } else {
-      new Lead(req.body)
-        .save()
+      Lead.create(req.body)
         .then((doc) => {
-          res.status(200).json({ data: doc, message: "Lead  Saved" });
+          project.leads.push(doc);
+          console.log(project);
+          Project.findByIdAndUpdate(req.body.intrested, project, {
+            new: true,
+          }).then((project) => {
+            console.log("output", project);
+            res.status(200).json({ data: doc, message: "Lead  Saved" });
+          });
+        })
+        .catch((error) => {
+          res.status(500).json({ message: "occured while saving lead" });
         })
         .catch((error) => {
           res.status(500).json({ message: error.message });
         });
     }
-  } else if (!req.body.projectId && !req.body.unitId) {
+  } else if (!req.body.intrested) {
     new Lead(req.body)
       .save()
       .then((doc) => {
@@ -50,7 +69,7 @@ router.get("/", (req, res, next) => {
   if ("intrested" in req.query) query.email = req.query.email;
   if ("phone" in req.query) query.phone = req.query.phone;
   Lead.find(query)
-    .populate("createdBy")
+    .populate("assignedTo")
     .exec()
     .then((doc) => {
       res.status(200).json({ data: doc });
@@ -65,10 +84,20 @@ router.get("/", (req, res, next) => {
  * @desc		Edit lead records
  */
 
-router.put("/:lead_id", (req, res, next) => {
-  if (req.body.projectId && req.body.unitId) {
-    const project = await Project.findById(req.body.projectId);
-    const alreadyAddedLead = project.leads.includes(req.body.clientId);
+router.put("/:lead_id", async (req, res, next) => {
+  if (req.body.intrested) {
+    const project = await Project.findById(req.body.intrested).populate(
+      "leads"
+    );
+    const alreadyAddedLead = project.leads
+      ? project.leads.map((i) => {
+          if (i.client === req.body.client) {
+            return true;
+          } else {
+            return false;
+          }
+        })
+      : false;
     if (alreadyAddedLead) {
       return res
         .status(200)
@@ -76,13 +105,18 @@ router.put("/:lead_id", (req, res, next) => {
     } else {
       Lead.findByIdAndUpdate(req.params.lead_id, req.body, { new: true })
         .then((doc) => {
-          res.status(200).json({ data: doc, message: "Lead Changed" });
+          project.leads.push(doc._id);
+          Project.findByIdAndUpdate(req.body.intrested, project, {
+            new: true,
+          }).then(() => {
+            res.status(200).json({ data: doc, message: "Lead Changed" });
+          });
         })
         .catch((error) => {
           res.status(500).json({ message: error.message });
         });
     }
-  } else if (!req.body.projectId && !req.body.unitId) {
+  } else if (!req.body.intrested) {
     Lead.findByIdAndUpdate(req.params.lead_id, req.body, { new: true })
       .then((doc) => {
         res.status(200).json({ data: doc, message: "Lead Changed" });
@@ -102,6 +136,34 @@ router.delete("/:lead_id", (req, res, next) => {
   Lead.findByIdAndDelete(req.params.lead_id)
     .then((doc) => {
       res.status(200).json({ data: doc, message: "Lead  Deleted" });
+    })
+    .catch((error) => {
+      res.status(500).json({ message: error.message });
+    });
+});
+
+/**
+ * @route		GET /lead/mobile?assignedTo=
+ * @desc		Fetch lead
+ */
+
+router.get("/mobile", (req, res, next) => {
+  let query = {};
+  if ("_id" in req.query) query._id = { $in: req.query._id.split(",") };
+  if ("assignedTo" in req.query) query.createdBy = req.query.createdBy;
+  if ("intrested" in req.query) query.email = req.query.email;
+  if ("phone" in req.query) query.phone = req.query.phone;
+  Lead.find(query)
+    .populate("assignedTo")
+    .exec()
+    .then((doc) => {
+      var result = doc.reduce((unique, o) => {
+        if (!unique.some((obj) => obj.clientId === o.clientId)) {
+          unique.push(o);
+        }
+        return unique;
+      }, []);
+      res.status(200).json({ data: result });
     })
     .catch((error) => {
       res.status(500).json({ message: error.message });

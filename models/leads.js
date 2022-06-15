@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const task = new Schema(
+const currentTask = new Schema(
   {
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "users",
       required: true,
     },
-    name: {
-      type: String,
+    task: {
+      type: Schema.Types.ObjectId,
+      ref: "task",
       required: true,
     },
     subtask: {
@@ -38,14 +39,18 @@ const leadSchema = new Schema(
     },
     intrested: {
       type: Schema.Types.ObjectId,
-      ref: "unit",
+      ref: "projects",
       required: true,
     },
     assignedTo: {
       type: Schema.Types.ObjectId,
       ref: "users",
     },
-    tasks: [task],
+    addedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "users",
+    },
+    leadTasks: [currentTask],
   },
   { timestamps: true }
 );
