@@ -7,7 +7,7 @@ const { Lead } = require("../models");
  * @body {task._id,}
  */
 
-router.post("/", async (req, res, next) => {
+router.post("/:lead", async (req, res, next) => {
   try {
     const doc = await Lead.findOneAndUpdate(
       { _id: req.params.lead },
@@ -29,11 +29,6 @@ router.put("/:currenTaskId", (req, res, next) => {
       const task = doc.leadTasks.id(req.params.currenTaskId);
       task.set(req.body);
       return doc.save();
-      //   const address = user.addresses.id(addressId); // returns a matching subdocument
-      //   address.set(req.body); // updates the address while keeping its schema
-      //   // address.zipCode = req.body.zipCode; // individual fields can be set directly
-
-      //   return user.save(); // saves document with subdocuments and triggers validation
     })
     .then((lead) => {
       return res.status(200).json({ data: lead, message: "Lead task Updated" });
