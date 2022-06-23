@@ -111,4 +111,36 @@ router.put("/password/forget", (req, res, next) => {
     });
 });
 
+/**
+ * @route   PUT /user/password/change
+ * @desc    Change Password
+ * @body    { _id, curr_pass, new_pass }
+ */
+
+router.put("/:id/password/change", (req, res, next) => {
+  if (!("curr_pass" in req.body && "new_pass" in req.body))
+    return res.status(400).json({ message: "Invalid Request Format" });
+  User.findById(req.params.id)
+    .then((doc) => {
+      if (!doc) {
+        return Promise.reject(new Error("No Such User Found"));
+      } else if (!User.checkPassword(req.body.curr_pass, doc.password)) {
+        return Promise.reject(new Error("Current Password is incorrect"));
+      } else {
+        return User.findByIdAndUpdate(
+          req.params.id,
+          { password: bcrypt.hashSync(req.body.new_pass, 10) },
+          { new: true }
+        ).exec();
+      }
+    })
+    .then((doc) => {
+      const token = jwt.sign(doc.toObject(), process.env.JWT_SECRET_KEY);
+      res.status(200).json({ message: "Password Changed", data: doc, token });
+    })
+    .catch((error) => {
+      res.status(500).json({ message: error.message });
+    });
+});
+
 module.exports = router;

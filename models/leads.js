@@ -14,7 +14,7 @@ const currentTask = new Schema(
       required: true,
     },
     subtask: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
     },
     message: {
@@ -27,7 +27,7 @@ const currentTask = new Schema(
       type: Boolean,
     },
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 const leadSchema = new Schema(

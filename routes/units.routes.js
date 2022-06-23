@@ -2,6 +2,22 @@ const router = require("express").Router();
 const { Project } = require("../models");
 
 /**
+ * @route		GET /unit
+ * @desc		get unit
+ */
+
+router.get("/", async (req, res, next) => {
+  try {
+    const doc = await Project.find();
+    let units = [];
+    doc.forEach((project) => project.unit.map((unit) => units.push(unit)));
+    return res.status(200).json({ doc: units, message: "Unit added." });
+  } catch (err) {
+    res.status(500).json({ message: "Couldn't add unit." });
+  }
+});
+
+/**
  * @route		POST /unit
  * @desc		Insert unit
  */

@@ -69,7 +69,7 @@ router.get("/", (req, res, next) => {
   if ("intrested" in req.query) query.email = req.query.email;
   if ("phone" in req.query) query.phone = req.query.phone;
   Lead.find(query)
-    .populate("assignedTo")
+    .populate("assignedTo client intrested")
     .exec()
     .then((doc) => {
       res.status(200).json({ data: doc });

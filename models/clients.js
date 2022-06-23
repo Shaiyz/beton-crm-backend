@@ -18,6 +18,12 @@ const clientSchema = new Schema({
   phone2: {
     type: Number,
   },
+  cnicFornt: {
+    type: String,
+  },
+  cnicBack: {
+    type: String,
+  },
   clientId: {
     type: String,
     unique: true,

@@ -51,12 +51,14 @@ app.use("/leadTask", require("../routes/leadTasks.routes"));
 app.use("/task", require("../routes/tasks.routes"));
 app.use("/lead", require("../routes/leads.routes"));
 app.use("/fileupload", require("../routes/fileupload.routes"));
+app.use("/unit", require("../routes/units.routes"));
 
 app.use("*", (req, res, next) => {
   res
     .status(404)
     .json({ message: `${req.method} ${req.originalUrl} Not Found` });
 });
+
 /**
  * Connect to mongodb
  */
