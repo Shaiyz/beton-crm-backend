@@ -163,7 +163,7 @@ router.get("/mobile", (req, res, next) => {
         return unique;
       }, []);
 
-      res.status(200).json({ data: result, message: "Successfull" });
+      res.status(200).json({ data: result });
     })
     .catch((error) => {
       res.status(500).json({ message: error.message });
