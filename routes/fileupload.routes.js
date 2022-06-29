@@ -18,7 +18,6 @@ const uploadFiles = multer({
     s3: s3,
     bucket: "beton-images-bucket",
     acl: "public-read",
-    // signatureVersion: "v4",
 
     key: function (req, file, cb) {
       cb(null, Date.now() + path.extname(file.originalname));
@@ -50,6 +49,7 @@ router.post("/", (req, res, next) => {
           acc[curr] = req.files[curr].map((file) => file.location);
           return acc;
         }, {});
+        console.log(req.files);
         res
           .status(200)
           .json({ ...files, message: "Files Uploaded Successfully" });

@@ -30,7 +30,6 @@ router.post("/", async (req, res, next) => {
       Lead.create(req.body)
         .then((doc) => {
           project.leads.push(doc);
-          console.log(project);
           Project.findByIdAndUpdate(req.body.intrested, project, {
             new: true,
           }).then((project) => {
@@ -158,7 +157,7 @@ router.get("/mobile", (req, res, next) => {
     .exec()
     .then((doc) => {
       var result = doc.reduce((unique, o) => {
-        if (!unique.some((obj) => obj.clientId === o.clientId)) {
+        if (!unique.some((obj) => obj.assignedTo._id === o.assignedTo._id)) {
           unique.push(o);
         }
         return unique;

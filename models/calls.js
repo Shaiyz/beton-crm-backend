@@ -7,7 +7,7 @@ const callSchema = new Schema({
     required: true,
   },
   callLength: {
-    type: Number,
+    type: String,
   },
   to: {
     type: Schema.Types.ObjectId,

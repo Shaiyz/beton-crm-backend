@@ -80,7 +80,6 @@ mongoose
   .then((doc) => {
     global.USERS = doc[0];
     global.CLIENTS = doc[1];
-
     global.console.log("Environment Initialized");
   })
   .catch((error) => {

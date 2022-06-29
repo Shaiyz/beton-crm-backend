@@ -9,6 +9,7 @@ const { Lead } = require("../models");
 
 router.post("/:lead", async (req, res, next) => {
   try {
+    console.log(req.body);
     const doc = await Lead.findOneAndUpdate(
       { _id: req.params.lead },
       { $push: { leadTasks: req.body } }
@@ -17,6 +18,36 @@ router.post("/:lead", async (req, res, next) => {
   } catch (err) {
     res.status(500).json({ message: "Couldn't add lead task." });
   }
+});
+
+/**
+ * @route		Get /leadTask/:user
+ * @desc		get employee tasks
+ */
+router.get("/:user", (req, res, next) => {
+  Lead.find(
+    { "leadTasks.createdBy": req.params.user },
+    { "leadTasks.completed": false }
+  )
+    .populate("intrested client leadTasks.task leadTasks.subtask")
+    .then((doc) => {
+      let userTasks = [];
+      doc.map((lead, ind) =>
+        lead.leadTasks.map((task) => {
+          if (task.createdBy == req.params.user) {
+            const { addedBy, leadTasks, assignedTo, ...rest } = lead._doc;
+            userTasks.push({ ...rest, ...task._doc });
+          }
+        })
+      );
+      return res
+        .status(200)
+        .json({ data: userTasks, message: "Employee task fetched" });
+    })
+    .catch((error) => {
+      console.log(error.message);
+      res.status(500).json({ message: error.message });
+    });
 });
 
 /**

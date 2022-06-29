@@ -10,7 +10,7 @@ const currentTask = new Schema(
     },
     task: {
       type: Schema.Types.ObjectId,
-      ref: "task",
+      ref: "tasks",
       required: true,
     },
     subtask: {
