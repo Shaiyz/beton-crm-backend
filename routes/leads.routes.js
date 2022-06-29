@@ -153,16 +153,17 @@ router.get("/mobile", (req, res, next) => {
   if ("intrested" in req.query) query.email = req.query.email;
   if ("phone" in req.query) query.phone = req.query.phone;
   Lead.find(query)
-    .populate("assignedTo")
+    .populate("client")
     .exec()
     .then((doc) => {
       var result = doc.reduce((unique, o) => {
         if (!unique.some((obj) => obj.assignedTo._id === o.assignedTo._id)) {
-          unique.push(o);
+          unique.push(o.client);
         }
         return unique;
       }, []);
-      res.status(200).json({ data: result });
+
+      res.status(200).json({ data: result, message: "Successfull" });
     })
     .catch((error) => {
       res.status(500).json({ message: error.message });
