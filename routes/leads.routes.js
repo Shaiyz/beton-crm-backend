@@ -12,17 +12,20 @@ router.post("/", async (req, res, next) => {
     const project = await Project.findById(req.body.intrested).populate(
       "leads"
     );
-
-    const alreadyAddedLead = project.leads
-      ? project.leads.map((i) => {
-          if (i.client === req.body.client) {
-            return true;
-          } else {
-            return false;
-          }
-        })
-      : false;
-    if (alreadyAddedLead) {
+    const alreadyAddedLead =
+      project.leads.length > 0
+        ? project.leads.map((i) => {
+            const clientId = i.client
+              .toString()
+              .replace(/ObjectId\("(.*)"\)/, "$1");
+            if (clientId === req.body.client) {
+              return true;
+            } else {
+              return false;
+            }
+          })
+        : [false];
+    if (alreadyAddedLead.includes(true)) {
       return res
         .status(200)
         .json({ message: "Lead is already added in this project" });
@@ -33,7 +36,6 @@ router.post("/", async (req, res, next) => {
           Project.findByIdAndUpdate(req.body.intrested, project, {
             new: true,
           }).then((project) => {
-            console.log("output", project);
             res.status(200).json({ data: doc, message: "Lead  Saved" });
           });
         })
@@ -153,20 +155,34 @@ router.get("/mobile", (req, res, next) => {
   if ("intrested" in req.query) query.email = req.query.email;
   if ("phone" in req.query) query.phone = req.query.phone;
   Lead.find(query)
-    .populate("client")
+    .populate("client intrested")
     .exec()
     .then((doc) => {
       var result = doc.reduce((unique, o) => {
-        if (!unique.some((obj) => obj.assignedTo._id === o.assignedTo._id)) {
-          unique.push(o.client);
+        if (!unique.some((obj) => obj.client._id == o.client._id)) {
+          unique.push(o);
         }
         return unique;
       }, []);
-
-      res.status(200).json({ data: result });
+      result = result.map((i) => {
+        return {
+          client: i.client,
+          intrested: {
+            project: i.intrested.name,
+            location: i.intrested.location,
+          },
+        };
+      });
+      res.status(200).json({
+        data: result,
+        statusCode: 200,
+        message: "Successfully fetched",
+      });
     })
     .catch((error) => {
-      res.status(500).json({ message: error.message });
+      res
+        .status(500)
+        .json({ message: error.message, statusCode: 500, data: [] });
     });
 });
 
