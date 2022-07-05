@@ -40,7 +40,7 @@ const leadSchema = new Schema(
     intrested: {
       type: Schema.Types.ObjectId,
       ref: "projects",
-      required: true,
+      // required: true,
     },
     assignedTo: {
       type: Schema.Types.ObjectId,

@@ -31,7 +31,7 @@ router.post("/create", (req, res, next) => {
     .save()
     .then((doc) => {
       if (!doc) return Promise.reject(new Error("Couldn't Create User"));
-      res.status(200).json({ data: doc });
+      res.status(200).json({ data: doc, message: "User added successfully" });
     })
     .catch((error) => res.status(500).json({ message: error.message }));
 });
