@@ -4,10 +4,15 @@ const { Client } = require("../models");
 /**
  * @route		POST /client
  * @desc		Insert client service records
- * @body		{ charges, merchant_user }
+ * @body
  */
 
-router.post("/", (req, res, next) => {
+router.post("/", async (req, res, next) => {
+  let phoneNumber = req.body.phone.slice(-10);
+  const user = await Client.findOne({ phone: phoneNumber });
+  if (user) {
+    return res.status(500).json({ message: "Client already registered" });
+  }
   new Client(req.body)
     .save()
     .then((doc) => {

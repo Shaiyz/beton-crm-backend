@@ -17,8 +17,9 @@ const clientSchema = new Schema({
   },
   phone2: {
     type: Number,
+    minlength: 10,
   },
-  cnicFornt: {
+  cnicFront: {
     type: String,
   },
   cnicBack: {

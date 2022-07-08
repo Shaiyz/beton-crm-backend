@@ -2,10 +2,8 @@ const router = require("express").Router();
 const passport = require("passport");
 const { User } = require("../models");
 const jwt = require("jsonwebtoken");
-// const { login } = require("../middlewares");
 const bcrypt = require("bcrypt");
 const { sendEmail, getRandomChars } = require("../util");
-// const checkToken = require("../middlewares/authenticate");
 
 /**
  * @route           POST /user/signin
@@ -26,11 +24,15 @@ router.post("/signin", (req, res, next) => {
  * @route         POST /user/create
  * @description   Insert a user record
  */
-router.post("/create", (req, res, next) => {
+router.post("/create", async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (user) {
+    return res.status(500).json({ message: "User already registered" });
+  }
   new User(req.body)
     .save()
     .then((doc) => {
-      if (!doc) return Promise.reject(new Error("Couldn't Create User"));
+      if (!doc) return Promise.reject(new Error("Couldn't create User"));
       res.status(200).json({ data: doc, message: "User added successfully" });
     })
     .catch((error) => res.status(500).json({ message: error.message }));

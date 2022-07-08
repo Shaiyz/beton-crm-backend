@@ -10,9 +10,10 @@ router.get("/", async (req, res, next) => {
   try {
     const doc = await Project.find();
     let units = [];
-    doc.forEach((project) =>
-      project.unit.map((unit) => units.push({ unit: unit, project: project }))
-    );
+    doc.forEach((project) => {
+      console.log(project);
+      project.unit.map((unit) => units.push({ unit: unit, project: project }));
+    });
     return res.status(200).json({ data: units, message: "Unit added." });
   } catch (err) {
     res.status(500).json({ message: "Couldn't add unit." });
@@ -28,7 +29,10 @@ router.post("/:project", async (req, res, next) => {
   try {
     const doc = await Project.findOneAndUpdate(
       { _id: req.params.project },
-      { $push: { units: req.body } }
+      { $push: { unit: req.body } },
+      {
+        new: true,
+      }
     );
     return res.status(200).json({ doc: doc, message: "Unit added." });
   } catch (err) {
@@ -42,9 +46,9 @@ router.post("/:project", async (req, res, next) => {
  */
 
 router.put("/:unitId", (req, res, next) => {
-  Project.findOne({ "units._id": req.params.unitId })
+  Project.findOne({ "unit._id": req.params.unitId })
     .then((doc) => {
-      const unit = doc.units.id(addressId);
+      const unit = doc.unit.id(req.params.unitId);
       unit.set(req.body);
       return doc.save();
     })

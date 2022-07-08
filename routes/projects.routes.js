@@ -10,7 +10,7 @@ router.post("/", async (req, res, next) => {
   new Project(req.body)
     .save()
     .then((doc) => {
-      res.status(200).json({ data: doc, message: "Lead  Saved" });
+      res.status(200).json({ data: doc, message: "Project added" });
     })
     .catch((error) => {
       res.status(500).json({ message: error.message });

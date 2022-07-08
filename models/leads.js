@@ -25,6 +25,7 @@ const currentTask = new Schema(
     },
     completed: {
       type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
@@ -40,7 +41,6 @@ const leadSchema = new Schema(
     intrested: {
       type: Schema.Types.ObjectId,
       ref: "projects",
-      // required: true,
     },
     assignedTo: {
       type: Schema.Types.ObjectId,

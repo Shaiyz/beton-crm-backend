@@ -9,7 +9,6 @@ const { Lead } = require("../models");
 
 router.post("/:lead", async (req, res, next) => {
   try {
-    console.log(req.body);
     const doc = await Lead.findOneAndUpdate(
       { _id: req.params.lead },
       { $push: { leadTasks: req.body } }

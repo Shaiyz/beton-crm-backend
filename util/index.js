@@ -92,12 +92,12 @@ module.exports = {
     const transporter = nodemailer.createTransport(credentials);
     const contacts = {
       from: "Beton <noreply@beton.com>",
-      to,
+      to: to,
       attachments: attachment,
     };
     return new Promise((res, rej) => {
       ejs
-        .renderFile(path.resolve(__dirname, "../email/forget-password.ejs"), {
+        .renderFile(path.resolve(__dirname, "./email/forget-password.ejs"), {
           email,
           password,
           message,
