@@ -24,16 +24,17 @@ router.post("/:lead", async (req, res, next) => {
  * @desc		get employee tasks
  */
 router.get("/:user", (req, res, next) => {
-  Lead.find(
-    { "leadTasks.createdBy": req.params.user },
-    { "leadTasks.completed": false }
-  )
+  Lead.find()
     .populate("intrested client leadTasks.task leadTasks.subtask")
     .then((doc) => {
       let userTasks = [];
       doc.map((lead, ind) =>
         lead.leadTasks.map((task) => {
-          if (task.createdBy == req.params.user) {
+          if (
+            task.createdBy.toString().replace(/ObjectId\("(.*)"\)/, "$1") ==
+              req.params.user &&
+            task.completed == false
+          ) {
             const { addedBy, leadTasks, assignedTo, ...rest } = lead._doc;
             userTasks.push({ ...rest, ...task._doc });
           }
@@ -41,7 +42,7 @@ router.get("/:user", (req, res, next) => {
       );
       return res
         .status(200)
-        .json({ data: userTasks, message: "Employee task fetched" });
+        .json({ data: userTasks, message: "User task fetched" });
     })
     .catch((error) => {
       console.log(error.message);
