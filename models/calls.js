@@ -29,7 +29,7 @@ const callSchema = new Schema({
   },
 });
 
-callSchema.pre("save", (next) => {
+callSchema.post("save", (next) => {
   var startDate = new Date(this.startedAt);
   var endDate = new Date(this.endDate);
   var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
