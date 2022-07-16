@@ -6,7 +6,7 @@ const callSchema = new Schema({
     type: Boolean,
     required: true,
   },
-  callLength: {
+  duration: {
     type: String,
   },
   to: {
@@ -19,23 +19,23 @@ const callSchema = new Schema({
     ref: "users",
     required: true,
   },
-  startedAt: {
-    type: Date,
-    required: true,
-  },
-  endedAt: {
-    type: Date,
-    required: true,
-  },
+  // startedAt: {
+  //   type: Date,
+  //   required: true,
+  // },
+  // endedAt: {
+  //   type: Date,
+  //   required: true,
+  // },
 });
 
-callSchema.post("save", (next) => {
-  var startDate = new Date(this.startedAt);
-  var endDate = new Date(this.endDate);
-  var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
-  this.callLength = seconds;
-  next();
-});
+// callSchema.post("save", (next) => {
+//   var startDate = new Date(this.startedAt);
+//   var endDate = new Date(this.endDate);
+//   var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
+//   this.callLength = seconds;
+//   next();
+// });
 
 const Call = mongoose.model("calls", callSchema);
 module.exports = Call;
