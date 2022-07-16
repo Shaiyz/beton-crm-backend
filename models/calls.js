@@ -30,8 +30,8 @@ const callSchema = new Schema({
 });
 
 callSchema.pre("save", (next) => {
-  var startDate = this.startedAt;
-  var endDate = this.endDate;
+  var startDate = new Date(this.startedAt);
+  var endDate = new Date(this.endDate);
   var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
   this.callLength = seconds;
   next();
