@@ -52,12 +52,20 @@ router.get("/", (req, res, next) => {
  */
 
 router.put("/:client_id", (req, res, next) => {
-  Client.findByIdAndUpdate(req.params.client_id, req.body, { new: true })
+  let phoneNumber = req.body.phone.slice(-10);
+  Client.findByIdAndUpdate(
+    req.params.client_id,
+    { phone: phoneNumber, ...req.body },
+    { new: true }
+  )
     .then((doc) => {
       res.status(200).json({ data: doc, message: "Client Changed" });
     })
     .catch((error) => {
-      res.status(500).json({ message: error.message });
+      if (error.name === "MongoServerError" && error.code === 11000) {
+        return res.status(500).json({ message: "Client already registered." });
+      }
+      return res.status(500).json({ message: error.message });
     });
 });
 

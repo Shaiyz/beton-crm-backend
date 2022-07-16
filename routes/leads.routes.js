@@ -86,44 +86,20 @@ router.get("/", (req, res, next) => {
  */
 
 router.put("/:lead_id", async (req, res, next) => {
-  if (!req.body.intrested) {
-    Lead.findByIdAndUpdate(req.params.lead_id, req.body, { new: true })
-      .then((doc) => {
-        Project.findOneAndUpdate(
-          { leads: doc._id },
-          { $pull: { leads: doc._id } },
-          {
-            new: true,
-          }
-        ).then(() => {
-          return res.status(200).json({ data: doc, message: "Lead Changed" });
-        });
-      })
-      .catch((error) => {
-        return res.status(500).json({ message: error.message });
-      });
-  }
-
-  Lead.findOneAndUpdate({ _id: req.params.lead_id }, req.body, { new: false })
+  await Lead.findOneAndUpdate(
+    { _id: req.params.lead_id },
+    { assignedTo: req.body.assignedTo }
+  );
+  Lead.findOne({ _id: req.params.lead_id })
     .then(async (doc) => {
       if (
+        !doc.intrested ||
         doc.intrested.toString().replace(/ObjectId\("(.*)"\)/, "$1") !==
-        req.body.intrested
+          req.body.intrested
       ) {
-        await Project.findOneAndUpdate(
-          { leads: req.params.lead_id },
-          { $pull: { leads: doc._id } },
-          { new: false }
-        );
-
-        Project.findOne(
-          { _id: req.body.intrested },
-          {
-            new: true,
-          }
-        )
+        Project.findOne({ _id: req.body.intrested })
           .populate("leads")
-          .then((project1) => {
+          .then(async (project1) => {
             const alreadyAddedLead =
               project1.leads.length > 0
                 ? project1.leads.map((i) => {
@@ -143,17 +119,28 @@ router.put("/:lead_id", async (req, res, next) => {
                 .status(500)
                 .json({ message: "Lead is already added in this project" });
             } else {
+              await Lead.findOneAndUpdate(
+                {
+                  _id: req.params.lead_id,
+                },
+                req.body
+              );
+              await Project.findOneAndUpdate(
+                { leads: req.params.lead_id },
+                { $pull: { leads: doc._id } },
+                { new: false }
+              );
               project1.leads.push(doc);
-              Project.findOneAndUpdate({ _id: project1._id }, project1, {
+              await Project.findOneAndUpdate({ _id: project1._id }, project1, {
                 new: true,
               });
               return res
                 .status(200)
-                .json({ data: doc, message: "Lead Changed" });
+                .json({ data: doc, message: "Lead Updated" });
             }
           });
       } else {
-        return res.status(200).json({ data: doc, message: "Lead Changed" });
+        return res.status(200).json({ message: "Lead Updated" });
       }
     })
     .catch((error) => {

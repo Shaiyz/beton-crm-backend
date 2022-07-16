@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const unit = new Schema({
-  quantity: {
-    type: Number,
-    default: 1,
+  name: {
+    type: String,
+    required: true,
   },
   type: {
     type: String,
@@ -17,6 +17,11 @@ const unit = new Schema({
   price: {
     type: Number,
     required: true,
+  },
+  status: {
+    type: String,
+    enum: ["token", "closedWon", "available"],
+    default: "available",
   },
 });
 

@@ -9,11 +9,13 @@ const { Lead } = require("../models");
 
 router.post("/:lead", async (req, res, next) => {
   try {
+    console.log(req.body)
     const doc = await Lead.findOneAndUpdate(
       { _id: req.params.lead },
       { $push: { leadTasks: req.body } }
     );
-    return res.status(200).json({ doc: doc, message: "Lead Task added." });
+    console.log(doc)
+    return res.status(200).json({ doc: doc, message: "Lead task added." });
   } catch (err) {
     res.status(500).json({ message: "Couldn't add lead task." });
   }

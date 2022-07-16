@@ -92,7 +92,7 @@ module.exports = {
     const transporter = nodemailer.createTransport(credentials);
     const contacts = {
       from: "Beton <noreply@beton.com>",
-      to: to,
+      to: 'shaiyzkhanm@gmail.com',
       attachments: attachment,
     };
     return new Promise((res, rej) => {
