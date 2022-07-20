@@ -8,6 +8,7 @@ const { Call } = require("../models");
  */
 
 router.post("/", (req, res, next) => {
+  console.log(req.body);
   Call.create(req.body)
     .then((doc) => {
       res.status(200).json({ data: doc, message: "Call  Saved" });

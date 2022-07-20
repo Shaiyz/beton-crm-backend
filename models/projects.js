@@ -20,7 +20,7 @@ const unit = new Schema({
   },
   status: {
     type: String,
-    enum: ["token", "closedWon", "available"],
+    enum: ["token", "sold", "available"],
     default: "available",
   },
 });
