@@ -62,7 +62,7 @@ router.get("/", (req, res, next) => {
  */
 
 router.put("/:client_id", async (req, res, next) => {
-  let phoneNumber = req.body.phone.slice(-10);
+  let phoneNumber = String(req.body.phone).slice(-10);
   const clients = await Client.find();
   let registered = false;
 
