@@ -27,6 +27,13 @@ const currentTask = new Schema(
       type: Boolean,
       default: false,
     },
+    project: {
+      type: Schema.Types.ObjectId,
+      ref: "projects",
+    },
+    unit: {
+      type: Schema.Types.ObjectId,
+    },
   },
   { timestamps: true }
 );

@@ -52,6 +52,7 @@ app.use("/task", require("../routes/tasks.routes"));
 app.use("/lead", require("../routes/leads.routes"));
 app.use("/fileupload", require("../routes/fileupload.routes"));
 app.use("/unit", require("../routes/units.routes"));
+app.use("/report", require("../routes/reports.routes"));
 
 app.use("*", (req, res, next) => {
   res

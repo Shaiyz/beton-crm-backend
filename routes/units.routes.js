@@ -11,7 +11,6 @@ router.get("/", async (req, res, next) => {
     const doc = await Project.find();
     let units = [];
     doc.forEach((project) => {
-      console.log(project);
       project.unit.map((unit) => units.push({ unit: unit, project: project }));
     });
     return res.status(200).json({ data: units, message: "Unit added." });

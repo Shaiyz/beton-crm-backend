@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { Lead } = require("../models");
+const { Lead, Transaction, Project } = require("../models");
 
 /**
  * @route		POST /leadTask
@@ -9,15 +9,50 @@ const { Lead } = require("../models");
 
 router.post("/:lead", async (req, res, next) => {
   try {
-    console.log(req.body)
+    if (req.body.client) {
+      const status =
+        req.body.subTaskName == "closedWon"
+          ? "sold"
+          : req.body.subTaskName == "token"
+          ? "token"
+          : "partial";
+      const transaction = await Transaction.findOne({
+        status: status,
+        unit: req.body.unit,
+      });
+      if (transaction) {
+        throw new Error("Transaction already created!");
+      }
+      await Transaction.create({
+        client: req.body.client,
+        project: req.body.project,
+        unit: req.body.unit,
+        amount: req.body.amount,
+        createdBy: req.body.createdBy,
+        status: status,
+      });
+
+      await Project.findOneAndUpdate(
+        { "unit._id": req.body.unit },
+        {
+          $set: {
+            "unit.$.status": status,
+          },
+        }
+      );
+      const doc = await Lead.findOneAndUpdate(
+        { _id: req.params.lead },
+        { $push: { leadTasks: req.body } }
+      );
+      return res.status(200).json({ doc: doc, message: "Transaction created" });
+    }
     const doc = await Lead.findOneAndUpdate(
       { _id: req.params.lead },
       { $push: { leadTasks: req.body } }
     );
-    console.log(doc)
     return res.status(200).json({ doc: doc, message: "Lead Task added." });
   } catch (err) {
-    res.status(500).json({ message: "Couldn't add lead task." });
+    res.status(500).json({ message: err.message });
   }
 });
 

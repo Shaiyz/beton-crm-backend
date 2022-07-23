@@ -30,6 +30,12 @@ const clientSchema = new Schema({
     unique: true,
     minlength: 8,
   },
+  address: {
+    type: String,
+  },
+  cnic: {
+    type: String,
+  },
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: "users",
@@ -41,9 +47,6 @@ clientSchema.pre("validate", function (next) {
   var id = `${"0".repeat(9 - num.length)}${num}`;
   this.clientId = id;
   global.CLIENTS += 1;
-  let phoneNumber = String(this.phone);
-  phoneNumber = phoneNumber.slice(-10);
-  this.phone = parseInt(phoneNumber);
   next();
 });
 

@@ -5,4 +5,5 @@ module.exports = {
   Project: require("./projects"),
   Call: require("./calls"),
   Task: require("./tasks"),
+  Transaction: require("./transactions"),
 };

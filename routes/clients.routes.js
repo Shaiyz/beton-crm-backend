@@ -9,8 +9,18 @@ const { Client } = require("../models");
 
 router.post("/", async (req, res, next) => {
   let phoneNumber = req.body.phone.slice(-10);
-  const user = await Client.findOne({ phone: phoneNumber });
-  if (user) {
+  const clients = await Client.find();
+  let registered = false;
+  clients.map((client) => {
+    if (
+      String(client.phone).slice(-10) == phoneNumber ||
+      String(client.phone2).slice(-10) == phoneNumber
+    ) {
+      registered = true;
+    }
+  });
+
+  if (registered == true) {
     return res.status(500).json({ message: "Client already registered" });
   }
   new Client(req.body)
@@ -51,13 +61,24 @@ router.get("/", (req, res, next) => {
  * @desc		Edit client records
  */
 
-router.put("/:client_id", (req, res, next) => {
+router.put("/:client_id", async (req, res, next) => {
   let phoneNumber = req.body.phone.slice(-10);
-  Client.findByIdAndUpdate(
-    req.params.client_id,
-    { phone: phoneNumber, ...req.body },
-    { new: true }
-  )
+  const clients = await Client.find();
+  let registered = false;
+
+  clients.map((client) => {
+    if (
+      String(client.phone).slice(-10) == phoneNumber ||
+      String(client.phone2).slice(-10) == phoneNumber
+    ) {
+      registered = true;
+    }
+  });
+  if (registered == true) {
+    return res.status(500).json({ message: "Client already registered" });
+  }
+
+  Client.findByIdAndUpdate(req.params.client_id, { ...req.body }, { new: true })
     .then((doc) => {
       res.status(200).json({ data: doc, message: "Client Changed" });
     })
