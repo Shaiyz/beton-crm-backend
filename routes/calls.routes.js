@@ -8,11 +8,13 @@ const { Call } = require("../models");
  */
 
 router.post("/", (req, res, next) => {
+  console.log(req.body);
   Call.create(req.body)
     .then((doc) => {
       res.status(200).json({ data: doc, message: "Call  Saved" });
     })
     .catch((error) => {
+      console.log(error.message);
       res.status(500).json({ message: error.message });
     });
 });
@@ -30,7 +32,6 @@ router.get("/", (req, res, next) => {
   if ("phone" in req.query) query.phone = req.query.phone;
 
   Call.find(query)
-    .populate("createdBy")
     .exec()
     .then((doc) => {
       res.status(200).json({ data: doc });
