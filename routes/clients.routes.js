@@ -12,10 +12,7 @@ router.post("/", async (req, res, next) => {
   const clients = await Client.find();
   let registered = false;
   clients.map((client) => {
-    if (
-      client.phone.slice(-10) == phoneNumber ||
-      client.phone2?.slice(-10) == phoneNumber
-    ) {
+    if (client.phone.slice(-10) == phoneNumber) {
       registered = true;
     }
   });
@@ -67,10 +64,7 @@ router.put("/:client_id", async (req, res, next) => {
   let registered = false;
 
   clients.map((client) => {
-    if (
-      client.phone.slice(-10) == phoneNumber ||
-      client.phone2?.slice(-10) == phoneNumber
-    ) {
+    if (client.phone.slice(-10) == phoneNumber) {
       registered = true;
     }
   });
