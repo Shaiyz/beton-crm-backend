@@ -10,13 +10,12 @@ const clientSchema = new Schema({
     required: true,
   },
   phone: {
-    type: Number,
+    type: String,
     required: true,
     unique: true,
-    minlength: 10,
   },
   phone2: {
-    type: Number,
+    type: String,
     minlength: 10,
   },
   cnicFront: {

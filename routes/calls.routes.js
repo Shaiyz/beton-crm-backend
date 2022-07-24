@@ -4,7 +4,6 @@ const { Call } = require("../models");
 /**
  * @route		POST /call
  * @desc		Insert call records
- * @body		{ charges, merchant_user }
  */
 
 router.post("/", (req, res, next) => {
@@ -27,11 +26,13 @@ router.post("/", (req, res, next) => {
 router.get("/", (req, res, next) => {
   let query = {};
   if ("_id" in req.query) query._id = { $in: req.query._id.split(",") };
-  if ("createdBy" in req.query) query.createdBy = req.query.createdBy;
+  if ("from" in req.query) query.createdBy = req.query.from;
+
   if ("email" in req.query) query.email = req.query.email;
   if ("phone" in req.query) query.phone = req.query.phone;
 
   Call.find(query)
+    // .populate("from")
     .exec()
     .then((doc) => {
       res.status(200).json({ data: doc });
