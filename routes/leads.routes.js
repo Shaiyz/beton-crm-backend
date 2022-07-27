@@ -171,13 +171,14 @@ router.delete("/:lead_id", (req, res, next) => {
 router.get("/mobile", (req, res, next) => {
   let query = {};
   if ("_id" in req.query) query._id = { $in: req.query._id.split(",") };
-  if ("assignedTo" in req.query) query.createdBy = req.query.createdBy;
+  if ("assignedTo" in req.query) query.assignedTo = req.query.assignedTo;
   if ("intrested" in req.query) query.email = req.query.email;
   if ("phone" in req.query) query.phone = req.query.phone;
   Lead.find(query)
     .populate("client intrested")
     .exec()
     .then((doc) => {
+      console.log(doc)
       var result = doc.reduce((unique, o) => {
         if (!unique.some((obj) => obj.client._id == o.client._id)) {
           unique.push(o);

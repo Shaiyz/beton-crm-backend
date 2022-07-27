@@ -17,12 +17,18 @@ router.post("/:lead", async (req, res, next) => {
           ? "token"
           : "partial";
       const transaction = await Transaction.findOne({
-        status: status,
+        // status: status,
         unit: req.body.unit,
       });
       if (transaction) {
-        throw new Error("Transaction already created!");
+        if (transaction.client !== req.body.client) {
+          throw new Error("Another client has already paid for this unit!");
+        }
+        if (transaction.status == status) {
+          throw new Error("Transaction already created!");
+        }
       }
+
       await Transaction.create({
         client: req.body.client,
         project: req.body.project,
