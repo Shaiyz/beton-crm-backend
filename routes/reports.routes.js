@@ -12,7 +12,6 @@ router.get("/:user/:startDate/:endDate", async (req, res, next) => {
     .startOf("day")
     .toDate();
   const endDate = moment(new Date(req.params.endDate)).endOf("day").toDate();
-  var now = new Date();
 
   const leadAdded = await Lead.find({
     addedBy: req.params.user,

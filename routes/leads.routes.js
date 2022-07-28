@@ -188,8 +188,8 @@ router.get("/mobile", (req, res, next) => {
         return {
           client: i.client,
           intrested: {
-            project: i.intrested.name,
-            location: i.intrested.location,
+            project: i.intrested ? i.intrested.name : "Not yet selected",
+            location: i.intrested ? i.intrested.location : "",
           },
         };
       });
