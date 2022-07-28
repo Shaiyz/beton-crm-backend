@@ -21,7 +21,10 @@ router.post("/:lead", async (req, res, next) => {
         unit: req.body.unit,
       });
       if (transaction) {
-        if (transaction.client !== req.body.client) {
+        if (
+          transaction.client.toString().replace(/ObjectId\("(.*)"\)/, "$1") !==
+          req.body.client
+        ) {
           throw new Error("Another client has already paid for this unit!");
         }
         if (transaction.status == status) {

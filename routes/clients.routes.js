@@ -9,11 +9,24 @@ const { Client } = require("../models");
 
 router.post("/", async (req, res, next) => {
   let phoneNumber = req.body.phone.slice(-10);
+  let phoneNumber2 = req.body.phone2 ? req.body.phone2.slice(-10) : "0";
+
   const clients = await Client.find();
   let registered = false;
   clients.map((client) => {
-    if (client.phone.slice(-10) == phoneNumber) {
+    if (
+      client.phone.slice(-10) == phoneNumber ||
+      client.phone.slice(-10) == phoneNumber2
+    ) {
       registered = true;
+    }
+    if (client.phone2) {
+      if (
+        client.phone2.slice(-10) == phoneNumber ||
+        client.phone2.slice(-10) == phoneNumber2
+      ) {
+        registered = true;
+      }
     }
   });
 
@@ -60,12 +73,25 @@ router.get("/", (req, res, next) => {
 
 router.put("/:client_id", async (req, res, next) => {
   let phoneNumber = req.body.phone.slice(-10);
+  let phoneNumber2 = req.body.phone2 ? req.body.phone2.slice(-10) : "0";
+
   const clients = await Client.find();
   let registered = false;
 
   clients.map((client) => {
-    if (client.phone.slice(-10) == phoneNumber) {
+    if (
+      client.phone.slice(-10) == phoneNumber ||
+      client.phone.slice(-10) == phoneNumber2
+    ) {
       registered = true;
+    }
+    if (client.phone2) {
+      if (
+        client.phone2.slice(-10) == phoneNumber ||
+        client.phone2.slice(-10) == phoneNumber2
+      ) {
+        registered = true;
+      }
     }
   });
   if (registered == true) {
