@@ -78,8 +78,7 @@ router.get("/:user", (req, res, next) => {
         lead.leadTasks.map((task) => {
           if (
             task.createdBy.toString().replace(/ObjectId\("(.*)"\)/, "$1") ==
-              req.params.user &&
-            task.completed == false
+            req.params.user
           ) {
             const { addedBy, leadTasks, assignedTo, ...rest } = lead._doc;
             userTasks.push({ ...rest, ...task._doc });

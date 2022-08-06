@@ -32,7 +32,6 @@ router.get("/", (req, res, next) => {
   if ("phone" in req.query) query.phone = req.query.phone;
 
   Call.find(query)
-    // .populate("from")
     .exec()
     .then((doc) => {
       res.status(200).json({ data: doc });
