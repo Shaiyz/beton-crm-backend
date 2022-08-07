@@ -57,6 +57,7 @@ router.get("/", (req, res, next) => {
 
   Client.find(query)
     .populate("createdBy")
+    .sort({ createdAt: -1 })
     .exec()
     .then((doc) => {
       res.status(200).json({ data: doc });

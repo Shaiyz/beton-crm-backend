@@ -71,6 +71,7 @@ router.get("/", (req, res, next) => {
   if ("phone" in req.query) query.phone = req.query.phone;
   Lead.find(query)
     .populate("assignedTo client intrested leadTasks.task")
+    .sort({ createdAt: -1 })
     .exec()
     .then((doc) => {
       res.status(200).json({ data: doc });

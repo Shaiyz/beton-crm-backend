@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const { Call } = require("../models");
+const moment = require("moment");
 
 /**
  * @route		POST /call
@@ -23,15 +24,21 @@ router.post("/", (req, res, next) => {
  * @desc		Fetch call records
  */
 
-router.get("/", (req, res, next) => {
-  let query = {};
-  if ("_id" in req.query) query._id = { $in: req.query._id.split(",") };
-  if ("from" in req.query) query.createdBy = req.query.from;
+router.get("/:user/:startDate/:endDate", (req, res, next) => {
+  const startDate = moment(new Date(req.params.startDate))
+    .startOf("day")
+    .toDate();
+  const endDate = moment(new Date(req.params.endDate)).endOf("day").toDate();
 
-  if ("email" in req.query) query.email = req.query.email;
-  if ("phone" in req.query) query.phone = req.query.phone;
-
-  Call.find(query)
+  Call.find({
+    from: req.params.user,
+    createdAt: {
+      $gte: startDate,
+      $lte: endDate,
+    },
+  })
+    .populate("to from")
+    .sort({ createdAt: -1 })
     .exec()
     .then((doc) => {
       res.status(200).json({ data: doc });
