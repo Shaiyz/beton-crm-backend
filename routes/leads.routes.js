@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const { Lead, Project } = require("../models");
+const { Client } = require("../models");
 
 /**
  * @route		POST /lead
@@ -8,53 +9,107 @@ const { Lead, Project } = require("../models");
  */
 
 router.post("/", async (req, res, next) => {
-  if (req.body.intrested) {
-    const project = await Project.findById(req.body.intrested).populate(
-      "leads"
-    );
-    const alreadyAddedLead =
-      project.leads.length > 0
-        ? project.leads.map((i) => {
-            const clientId = i.client
-              .toString()
-              .replace(/ObjectId\("(.*)"\)/, "$1");
-            if (clientId === req.body.client) {
-              return true;
-            } else {
-              return false;
-            }
+  let phoneNumber = req.body.phone.slice(-10);
+  let phoneNumber2 = req.body.phone2 ? req.body.phone2.slice(-10) : "0";
+  const clients = await Client.find();
+  let registered = false;
+  clients.map((client) => {
+    if (
+      client.phone.slice(-10) == phoneNumber ||
+      client.phone.slice(-10) == phoneNumber2
+    ) {
+      registered = true;
+    }
+    if (client.phone2) {
+      if (
+        client.phone2.slice(-10) == phoneNumber ||
+        client.phone2.slice(-10) == phoneNumber2
+      ) {
+        registered = true;
+      }
+    }
+  });
+
+  if (registered == true) {
+    return res.status(500).json({ message: "Client already registered" });
+  }
+  try {
+    const client = await new Client(req.body).save();
+
+    if (req.body.intrested) {
+      const project = await Project.findById(req.body.intrested).populate(
+        "leads"
+      );
+      const alreadyAddedLead =
+        project.leads.length > 0
+          ? project.leads.map((i) => {
+              const clientId = i.client
+                .toString()
+                .replace(/ObjectId\("(.F*)"\)/, "$1");
+              if (clientId === client._id) {
+                return true;
+              } else {
+                return false;
+              }
+            })
+          : [false];
+      if (alreadyAddedLead.includes(true)) {
+        return res
+          .status(500)
+          .json({ message: "Lead is already added in this project" });
+      } else {
+        Lead.create({ client: client._id, ...req.body })
+          .then((doc) => {
+            console.log(doc);
+            project.leads.push(doc);
+            Project.findByIdAndUpdate(req.body.intrested, project, {
+              new: true,
+            }).then(() => {
+              res.status(200).json({ data: doc, message: "Lead  Saved" });
+            });
           })
-        : [false];
-    if (alreadyAddedLead.includes(true)) {
-      return res
-        .status(500)
-        .json({ message: "Lead is already added in this project" });
-    } else {
-      Lead.create(req.body)
-        .then((doc) => {
-          project.leads.push(doc);
-          Project.findByIdAndUpdate(req.body.intrested, project, {
-            new: true,
-          }).then((project) => {
-            res.status(200).json({ data: doc, message: "Lead  Saved" });
+          .catch((error) => {
+            res.status(500).json({ message: "occured while saving lead" });
+          })
+          .catch((error) => {
+            res.status(500).json({ message: error.message });
           });
-        })
-        .catch((error) => {
-          res.status(500).json({ message: "occured while saving lead" });
+      }
+    } else if (!req.body.intrested) {
+      new Lead({ client: client._id, ...req.body })
+        .save()
+        .then((doc) => {
+          res.status(200).json({ data: doc, message: "Lead Saved" });
         })
         .catch((error) => {
           res.status(500).json({ message: error.message });
         });
     }
-  } else if (!req.body.intrested) {
-    new Lead(req.body)
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+});
+
+/**
+ * @route		POST /lead
+ * @desc		Insert lead
+ * @body	{client,intrested,unitId}
+ */
+router.post("/duplicate", async (req, res, next) => {
+  try {
+    new Lead({ ...req.body })
       .save()
       .then((doc) => {
-        res.status(200).json({ data: doc, message: "Lead Saved" });
+        res.status(200).json({
+          data: doc,
+          message: "Duplicate Lead Added.",
+        });
       })
       .catch((error) => {
         res.status(500).json({ message: error.message });
       });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 });
 

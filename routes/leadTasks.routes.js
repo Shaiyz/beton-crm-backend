@@ -80,17 +80,18 @@ router.get("/:user", (req, res, next) => {
             task.createdBy.toString().replace(/ObjectId\("(.*)"\)/, "$1") ==
             req.params.user
           ) {
-            const { addedBy, leadTasks, assignedTo, ...rest } = lead._doc;
-            userTasks.push({ ...rest, ...task._doc });
+            const { addedBy, leadTasks, assignedTo, _id, ...rest } = lead._doc;
+            console.log(rest);
+            userTasks.push({ ...rest, leadId: _id, ...task._doc });
           }
         })
       );
+      console.log(userTasks);
       return res
         .status(200)
         .json({ data: userTasks, message: "User task fetched" });
     })
     .catch((error) => {
-      console.log(error.message);
       res.status(500).json({ message: error.message });
     });
 });
