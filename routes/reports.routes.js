@@ -17,11 +17,8 @@ router.get("/:user/:startDate/:endDate", async (req, res, next) => {
   end = `${end[0]}-${end[1]}-${endDay}`;
 
   const endDate = new Date(end);
-  // console.log(endDate);
-  console.log(new Date.now());
   // moment(new Date(end)).startOf("day").toDate();
-  // console.log(end);
-  console.l;
+
   console.log(endDate);
   console.log(startDate);
 
