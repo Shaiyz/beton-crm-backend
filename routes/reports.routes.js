@@ -10,13 +10,17 @@ const { Lead, Call } = require("../models");
 router.get("/:user/:startDate/:endDate", async (req, res, next) => {
   const startDate = moment(new Date(req.params.startDate))
     .startOf("day")
-    .toDate();
-  const endDate = moment(new Date(req.params.endDate)).endOf("day").toDate();
+    .toISOString();
+  let end = req.params.endDate.split("-");
+  endDay = +end[2] + 1;
+  let endDate = moment(new Date(end[0] + "-" + end[1] + "-" + endDay))
+    .startOf("day")
+    .toISOString();
   const leadAdded = await Lead.find({
     addedBy: req.params.user,
     createdAt: {
       $gte: startDate,
-      $lte: endDate,
+      $lt: endDate,
     },
   });
 
@@ -24,7 +28,7 @@ router.get("/:user/:startDate/:endDate", async (req, res, next) => {
     assignedTo: req.params.user,
     createdAt: {
       $gte: startDate,
-      $lte: endDate,
+      $lt: endDate,
     },
   });
   let meetingsDone = 0;
@@ -34,7 +38,7 @@ router.get("/:user/:startDate/:endDate", async (req, res, next) => {
     "leadTasks.completed": true,
     "leadTasks.createdAt": {
       $gte: startDate,
-      $lte: endDate,
+      $lt: endDate,
     },
   });
   meetings.forEach((doc) =>
@@ -63,7 +67,7 @@ router.get("/:user/:startDate/:endDate", async (req, res, next) => {
     "leadTasks.completed": true,
     "leadTasks.createdAt": {
       $gte: startDate,
-      $lte: endDate,
+      $lt: endDate,
     },
   });
   leadWork.forEach((doc) =>
@@ -82,7 +86,7 @@ router.get("/:user/:startDate/:endDate", async (req, res, next) => {
     from: req.params.user,
     createdAt: {
       $gte: startDate,
-      $lte: endDate,
+      $lt: endDate,
     },
   });
 

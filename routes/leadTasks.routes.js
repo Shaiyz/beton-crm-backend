@@ -17,7 +17,6 @@ router.post("/:lead", async (req, res, next) => {
           ? "token"
           : "partial";
       const transaction = await Transaction.findOne({
-        // status: status,
         unit: req.body.unit,
       });
       if (transaction) {
@@ -81,12 +80,10 @@ router.get("/:user", (req, res, next) => {
             req.params.user
           ) {
             const { addedBy, leadTasks, assignedTo, _id, ...rest } = lead._doc;
-            console.log(rest);
             userTasks.push({ ...rest, leadId: _id, ...task._doc });
           }
         })
       );
-      console.log(userTasks);
       return res
         .status(200)
         .json({ data: userTasks, message: "User task fetched" });
