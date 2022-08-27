@@ -12,10 +12,11 @@ router.get("/:user/:startDate/:endDate", async (req, res, next) => {
     .startOf("day")
     .toDate();
   let end = req.params.endDate.split("-");
-  endDay = +end[2] + 1;
-  let endDate = moment(new Date(end[0] + "-" + end[1] + "-" + endDay))
-    .startOf("day")
-    .toDate();
+  let endDay = +end[2] + 1;
+  end = `${end[0]}-${end[1]}-${endDay.toString()}`;
+
+  const endDate = moment(new Date(end)).startOf("day").toDate();
+  console.log(end);
   const leadAdded = await Lead.find({
     addedBy: req.params.user,
     createdAt: {
