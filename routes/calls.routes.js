@@ -33,7 +33,7 @@ router.get("/:user/:startDate/:endDate", (req, res, next) => {
   const endDate = moment(new Date(end)).startOf("day").toDate();
   Call.find({
     from: req.params.user,
-    createdAt: {
+    timestamp: {
       $gte: startDate,
       $lt: endDate,
     },
