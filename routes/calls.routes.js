@@ -26,12 +26,12 @@ router.post("/", (req, res, next) => {
 router.get("/:user/:startDate/:endDate", (req, res, next) => {
   const startDate = moment(new Date(req.params.startDate))
     .startOf("day")
-    .toISOString();
+    .toDate();
   let end = req.params.endDate.split("-");
   endDay = +end[2] + 1;
   let endDate = moment(new Date(end[0] + "-" + end[1] + "-" + endDay))
     .startOf("day")
-    .toISOString();
+    .toDate();
   Call.find({
     from: req.params.user,
     createdAt: {
