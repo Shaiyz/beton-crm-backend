@@ -24,17 +24,24 @@ router.post("/", (req, res, next) => {
  */
 
 router.get("/:user/:startDate/:endDate", (req, res, next) => {
-  const startDate = moment(new Date(req.params.startDate)).hours(-5);
+  // const startDate = moment(new Date(req.params.startDate)).hours(-5);
 
+  // let end = req.params.endDate.split("-");
+  // let endDay = +end[2] + 1;
+  // end = `${end[0]}-${end[1]}-${endDay}`;
+  // const endDate = new Date(end);
+
+  const startDate = new Date(req.params.startDate);
   let end = req.params.endDate.split("-");
   let endDay = +end[2] + 1;
-  end = `${end[0]}-${end[1]}-${endDay}`;
+  end = `${end[1]}-${endDay}-${end[0]}`;
   const endDate = new Date(end);
+
   Call.find({
     from: req.params.user,
-    timestamp: {
+    createdAt: {
       $gte: startDate,
-      $lt: endDate,
+      $lte: endDate,
     },
   })
     .populate("to from")

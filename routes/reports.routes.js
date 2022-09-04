@@ -8,16 +8,14 @@ const { Lead, Call } = require("../models");
  */
 
 router.get("/:user/:startDate/:endDate", async (req, res, next) => {
-  const startDate = moment(new Date(req.params.startDate)).hours(-5);
-
+  const startDate = new Date(req.params.startDate);
   let end = req.params.endDate.split("-");
   let endDay = +end[2] + 1;
-  end = `${end[0]}-${end[1]}-${endDay}`;
-
+  end = `${end[1]}-${endDay}-${end[0]}`;
   const endDate = new Date(end);
+
   console.log(endDate);
   console.log(startDate);
-
   const leadAdded = await Lead.find({
     addedBy: req.params.user,
     createdAt: {
