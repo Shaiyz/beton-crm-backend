@@ -76,7 +76,7 @@ router.put("/:client_id", async (req, res, next) => {
   let phoneNumber = req.body.phone.slice(-10);
   let phoneNumber2 = req.body.phone2 ? req.body.phone2.slice(-10) : "0";
 
-  const clients = await Client.find();
+  const clients = await Client.find({ _id: { $ne: req.params.client_id } });
   let registered = false;
 
   clients.map((client) => {
