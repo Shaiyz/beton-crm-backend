@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { Client } = require("../models");
+const { Client, Lead, Call } = require("../models");
 
 /**
  * @route		POST /client
@@ -54,13 +54,13 @@ router.get("/", (req, res, next) => {
   if ("createdBy" in req.query) query.createdBy = req.query.createdBy;
   if ("email" in req.query) query.email = req.query.email;
   if ("phone" in req.query) query.phone = req.query.phone;
-
   Client.find(query)
     .populate("createdBy")
     .sort({ createdAt: -1 })
     .exec()
     .then((doc) => {
-      res.status(200).json({ data: doc });
+      const result = doc.filter((i) => i.isDeleted === false);
+      res.status(200).json({ data: result });
     })
     .catch((error) => {
       res.status(500).json({ message: error.message });
@@ -101,6 +101,7 @@ router.put("/:client_id", async (req, res, next) => {
 
   Client.findByIdAndUpdate(req.params.client_id, { ...req.body }, { new: true })
     .then((doc) => {
+      console.log(doc);
       res.status(200).json({ data: doc, message: "Client Changed" });
     })
     .catch((error) => {

@@ -24,6 +24,7 @@ const clientSchema = new Schema({
   cnicBack: {
     type: String,
   },
+  isDeleted: { type: Boolean, default: false },
   clientId: {
     type: String,
     unique: true,

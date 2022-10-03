@@ -14,8 +14,6 @@ router.get("/:user/:startDate/:endDate", async (req, res, next) => {
   end = `${end[1]}-${endDay}-${end[0]}`;
   const endDate = new Date(end);
 
-  console.log(endDate);
-  console.log(startDate);
   const leadAdded = await Lead.find({
     addedBy: req.params.user,
     createdAt: {

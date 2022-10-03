@@ -8,7 +8,7 @@ const unit = new Schema({
   },
   type: {
     type: String,
-    enum: ["office", "apartment", "plot", "suite", "penthouse"],
+    enum: ["office", "apartment","appartment", "plot", "suite", "shop", "penthouse"],
   },
   size: {
     type: String,
@@ -17,6 +17,10 @@ const unit = new Schema({
   price: {
     type: Number,
     required: true,
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
   },
   status: {
     type: String,

@@ -11,11 +11,15 @@ router.get("/", async (req, res, next) => {
     const doc = await Project.find();
     let units = [];
     doc.forEach((project) => {
-      project.unit.map((unit) => units.push({ unit: unit, project: project }));
+      project.unit.map((unit) => {
+        if (unit.isDeleted == false) {
+          units.push({ unit: unit, project: project });
+        }
+      });
     });
-    return res.status(200).json({ data: units, message: "Unit added." });
+    return res.status(200).json({ data: units, message: "Unit fetched" });
   } catch (err) {
-    res.status(500).json({ message: "Couldn't add unit." });
+    res.status(500).json({ message: "Couldn't fetch units." });
   }
 });
 
@@ -49,6 +53,7 @@ router.put("/:unitId", (req, res, next) => {
     .then((doc) => {
       const unit = doc.unit.id(req.params.unitId);
       unit.set(req.body);
+      console.log(unit);
       return doc.save();
     })
     .then((project) => {

@@ -211,7 +211,14 @@ router.put("/:lead_id", async (req, res, next) => {
 
 router.delete("/:lead_id", (req, res, next) => {
   Lead.findByIdAndDelete(req.params.lead_id)
-    .then((doc) => {
+    .then(async (doc) => {
+      if (doc.intrested)
+        await Project.findOneAndUpdate(
+          { leads: req.params.lead_id },
+          { $pull: { leads: req.params.lead_id } },
+          { new: false }
+        );
+
       res.status(200).json({ data: doc, message: "Lead  Deleted" });
     })
     .catch((error) => {
