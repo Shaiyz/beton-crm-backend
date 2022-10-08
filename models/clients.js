@@ -25,6 +25,9 @@ const clientSchema = new Schema({
     type: String,
   },
   isDeleted: { type: Boolean, default: false },
+  intrestedIn: {
+    type: String,
+  },
   clientId: {
     type: String,
     unique: true,

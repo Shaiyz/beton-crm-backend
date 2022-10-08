@@ -53,6 +53,9 @@ const leadSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "users",
     },
+    intrestedToBuy: {
+      type: String,
+    },
     addedBy: {
       type: Schema.Types.ObjectId,
       ref: "users",

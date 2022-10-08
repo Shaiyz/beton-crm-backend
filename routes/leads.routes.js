@@ -149,6 +149,7 @@ router.post("/excel", async (req, res, next) => {
       phone: lead.phone_number,
       name: lead.full_name,
       address: lead.city ? lead.city : "",
+      intrestedIn: lead.interested_to_buy ? lead.interested_to_buy : "",
     };
   });
 
@@ -162,7 +163,6 @@ router.post("/excel", async (req, res, next) => {
       };
     });
     await Lead.create(leads);
-
     res.status(200).json({ message: "Lead Saved" });
   } catch (err) {
     console.log(err.message);
