@@ -114,6 +114,63 @@ router.post("/duplicate", async (req, res, next) => {
 });
 
 /**
+ * @route		POST /lead/excel
+ * @desc		Insert lead excel
+ * @body	{leads,assignedTo,createdBy,addedBy}
+ */
+
+router.post("/excel", async (req, res, next) => {
+  let leads = req.body.leads;
+  const clients = await Client.find();
+  let clientData = [];
+  clients.map((client) => {
+    leads.map((lead, index) => {
+      if (client.phone.slice(-10) == lead.phone_number.toString().slice(-10)) {
+        leads.splice(index, 1);
+      }
+      if (client.phone2) {
+        if (
+          client.phone2.slice(-10) == lead.phone_number.toString().slice(-10)
+        ) {
+          leads.splice(index, 1);
+        }
+      }
+    });
+  });
+  if (leads.length == 0) {
+    return res.status(500).json({
+      message: "All leads are already added in the system",
+    });
+  }
+  clientData = await leads.map((lead) => {
+    return {
+      createdBy: req.body.createdBy,
+      email: lead.email ? lead.email : "",
+      phone: lead.phone_number,
+      name: lead.full_name,
+      address: lead.city ? lead.city : "",
+    };
+  });
+
+  try {
+    const addedClients = await Client.create(clientData);
+    const leads = await addedClients.map((client) => {
+      return {
+        client: client._id,
+        assignedTo: req.body.assignedTo,
+        addedBy: req.body.addedBy,
+      };
+    });
+    await Lead.create(leads);
+
+    res.status(200).json({ message: "Lead Saved" });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({ message: err.message });
+  }
+});
+
+/**
  * @route		GET /lead
  * @desc		Fetch lead
  */
@@ -239,6 +296,7 @@ router.get("/mobile", (req, res, next) => {
   if ("phone" in req.query) query.phone = req.query.phone;
   Lead.find(query)
     .populate("client intrested")
+    .sort({ createdAt: -1 })
     .exec()
     .then((doc) => {
       var result = doc.reduce((unique, o) => {
